@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard System</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            position: relative;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s, transform 0.1s;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background-color: #9ca3af;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7b828e;
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .link-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dashboard & View Details Styles */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-item span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .detail-item p {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Plus Button for future extensions */
+        .btn-fab {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn-fab:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            
+            <!-- 1. LOGIN PAGE -->
+            <div id="login-page" class="page active">
+                <h2>Member Login</h2>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" placeholder="enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div class="link-text">
+                    Not a member yet? <a href="#" onclick="showPage('register-page')">Register here</a>
+                </div>
+            </div>
+
+            <!-- 2. REGISTER PAGE -->
+            <div id="register-page" class="page">
+                <h2>Member Registration</h2>
+                <form id="register-form" onsubmit="handleRegister(event)">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="reg-fname">First Name</label>
+                            <input type="text" id="reg-fname" placeholder="First Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-sname">Second Name</label>
+                            <input type="text" id="reg-sname" placeholder="Second Name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" placeholder="Password" required>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="reg-gender">Gender</label>
+                            <select id="reg-gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-county">County</label>
+                            <input type="text" id="reg-county" placeholder="Enter County" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+                <div class="link-text">
+                    Already a member? <a href="#" onclick="showPage('login-page')">Login here</a>
+                </div>
+            </div>
+
+            <!-- 3. VIEW DETAILS / DASHBOARD PAGE -->
+            <div id="details-page" class="page">
+                <div class="dashboard-header">
+                    <h2>Member Details</h2>
+                    <button class="btn btn-secondary" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span>First Name</span>
+                        <p id="view-fname">-</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Second Name</span>
+                        <p id="view-sname">-</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Email</span>
+                        <p id="view-email">-</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Gender</span>
+                        <p id="view-gender">-</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>County</span>
+                        <p id="view-county">-</p>
+                    </div>
+                </div>
+
+                <div class="actions-bar">
+                    <div class="action-group">
+                        <!-- Edit Button -->
+                        <button class="btn btn-secondary" onclick="showEditPage()"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <!-- Delete Button (Red Color) -->
+                        <button class="btn btn-danger" onclick="deleteAccount()"><i class="fa-solid fa-trash"></i> Delete Account</button>
+                    </div>
+
+                    <!-- Plus Button (For Future Extensions) -->
+                    <button class="btn-fab" onclick="futureUpgrade()" title="Add New Feature / Future Upgrade">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. EDIT PAGE -->
+            <div id="edit-page" class="page">
+                <h2>Edit Details</h2>
+                <form id="edit-form" onsubmit="handleEdit(event)">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="edit-fname">First Name</label>
+                            <input type="text" id="edit-fname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-sname">Second Name</label>
+                            <input type="text" id="edit-sname" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="edit-gender">Gender</label>
+                            <select id="edit-gender" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-county">County</label>
+                            <input type="text" id="edit-county" required>
+                        </div>
+                    </div>
+                    <div class="actions-bar">
+                        <button type="submit" class="btn btn-primary" style="width: auto;">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" onclick="showPage('details-page')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Navigation and State Management -->
+    <script>
+        // Store current registered user details in local memory
+        let userProfile = null;
+
+        // Function to switch between pages
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Handle Registration
+        function handleRegister(e) {
+            e.preventDefault();
+            
+            userProfile = {
+                firstName: document.getElementById('reg-fname').value,
+                secondName: document.getElementById('reg-sname').value,
+                email: document.getElementById('reg-email').value,
+                password: document.getElementById('reg-password').value,
+                gender: document.getElementById('reg-gender').value,
+                county: document.getElementById('reg-county').value
+            };
+
+            alert('Registration Successful! Please log in now.');
+            document.getElementById('register-form').reset();
+            showPage('login-page');
+        }
+
+        // Handle Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (userProfile && userProfile.email === email && userProfile.password === password) {
+                renderDetails();
+                showPage('details-page');
+            } else {
+                alert('Invalid Email or Password! If you are not registered, please register first.');
+            }
+        }
+
+        // Render data on View Details page
+        function renderDetails() {
+            if (userProfile) {
+                document.getElementById('view-fname').innerText = userProfile.firstName;
+                document.getElementById('view-sname').innerText = userProfile.secondName;
+                document.getElementById('view-email').innerText = userProfile.email;
+                document.getElementById('view-gender').innerText = userProfile.gender;
+                document.getElementById('view-county').innerText = userProfile.county;
+            }
+        }
+
+        // Display Edit Page populated with existing user info
+        function showEditPage() {
+            if (userProfile) {
+                document.getElementById('edit-fname').value = userProfile.firstName;
+                document.getElementById('edit-sname').value = userProfile.secondName;
+                document.getElementById('edit-gender').value = userProfile.gender;
+                document.getElementById('edit-county').value = userProfile.county;
+                showPage('edit-page');
+            }
+        }
+
+        // Handle Details Edit/Update
+        function handleEdit(e) {
+            e.preventDefault();
+            
+            userProfile.firstName = document.getElementById('edit-fname').value;
+            userProfile.secondName = document.getElementById('edit-sname').value;
+            userProfile.gender = document.getElementById('edit-gender').value;
+            userProfile.county = document.getElementById('edit-county').value;
+
+            alert('Profile updated successfully!');
+            renderDetails();
+            showPage('details-page');
+        }
+
+        // Handle Delete Action
+        function deleteAccount() {
+            const confirmDelete = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+            if (confirmDelete) {
+                userProfile = null;
+                alert('Account deleted successfully.');
+                document.getElementById('login-form').reset();
+                showPage('login-page');
+            }
+        }
+
+        // Handle Future Upgrade Button (+)
+        function futureUpgrade() {
+            alert('This Plus (+) button is reserved for future extensions (e.g., Add new records, Upload files, or Create posts).');
+        }
+
+        // Handle Logout
+        function logout() {
+            document.getElementById('login-form').reset();
+            showPage('login-page');
+        }
+    </script>
+</body>
+</html>
